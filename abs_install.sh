@@ -197,7 +197,7 @@ function ask_user() {
     echo "$ABSUSER:$USERPASS" | chpasswd
 
     ABSHOME=$(sudo -H -u $ABSUSER bash -c 'echo $HOME')
-    DEFAULTABSFOLDER="$ABSHOME/.abscoincore"
+    DEFAULTABSFOLDER="$ABSHOME/.absolutecore"
     read -p "Configuration folder: " -i $DEFAULTABSFOLDER -e ABSFOLDER
     : ${ABSFOLDER:=$DEFAULTABSFOLDER}
     mkdir -p $ABSFOLDER
