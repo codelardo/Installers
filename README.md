@@ -109,7 +109,7 @@ systemctl is-enabled absuser.service        #To check if Absolute service is ena
 
 Any donation is highly appreciated
 
-**Absolute**: ikPW7eMcLu17KzUASAZSVevLGSLX8FoxYc  
+**Absolute**:   
 **BTC**: 32PN27dDZhUYAmyJTWuzDvNscbVpkL9855  
 **ETH**: 0x02680cdF57EEDC20C8A12036CA03e8D5F813b33b  
 **LTC**: MKYX9Pm58z6xSWT4Rc3CynjR58nj8hKo4F  
