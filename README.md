@@ -30,6 +30,10 @@ bash abs_install.sh
 ```
 Once the VPS installation is finished.
 
+# Write Down or Copy Your User Password that was generated 
+
+# Next - 
+
 Check the block height
 
 We want the blocks to match whats on the Absolute block explorer (https://explorer.absolutecoin.net/)
@@ -85,13 +89,21 @@ absolute-cli masternode status
 absolute-cli masternode status  
 absolute-cli getinfo
 ```
-Also, if you want to check/start/stop **Ips**, run one of the following commands as **root**:
+Also, if you want to check/start/stop **Absolute**, run one of the following commands as **user**:
+
+# To switch user -  
+
+Type             (absuser =   Your Username Created)
 
 ```
-systemctl status Ips          #To check if Absolute service is running  
-systemctl start Ips           #To start Absolute service  
-systemctl stop Ips            #To stop Absolute service  
-systemctl is-enabled Ips      #To check if Absolute service is enabled on boot  
+su absuser
+```
+
+```
+systemctl status absuser.service            #To check if Absolute service is running  
+systemctl start absuser.service             #To start Absolute service  
+systemctl stop absuser.service              #To stop Absolute service  
+systemctl is-enabled absuser.service        #To check if Absolute service is enabled on boot  
 ```  
 ***
 
