@@ -121,7 +121,7 @@ function compile_node() {
   echo -e "Download binaries. This may take some time. Press a key to continue."
   cd $TMP_FOLDER >/dev/null 2>&1
   wget -q $ABS_REPO >/dev/null 2>&1
-  unzip $(echo $ABS_REPO | awk -F"/" '{print $NF}') >/dev/null 2>&1
+  tar xvzf $ABS_REPO --strip 1 >/dev/null 2>&1
   compile_error AbsoluteCoin
   cp abs* /usr/local/bin
   chmod +x /usr/local/bin/abs*
