@@ -32,8 +32,6 @@ Once the VPS installation is finished.
 
 # Write Down or Copy Your User Password that was generated 
 
-# Next - 
-
 Check the block height
 
 We want the blocks to match whats on the Absolute block explorer (https://explorer.absolutecoin.net/)
