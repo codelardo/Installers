@@ -76,22 +76,22 @@ masternode start-alias MN1
 ``` 
 14. Login to your VPS and check your masternode status by running the following command:.
 ```
-ips-cli masternode status
+absolute-cli masternode status
 ```
 ***
 
 ## Usage:
 ```
-ips-cli masternode status  
-ips-cli getinfo
+absolute-cli masternode status  
+absolute-cli getinfo
 ```
 Also, if you want to check/start/stop **Ips**, run one of the following commands as **root**:
 
 ```
-systemctl status Ips          #To check if Ipsum service is running  
-systemctl start Ips           #To start Ipsum service  
-systemctl stop Ips            #To stop Ipsum service  
-systemctl is-enabled Ips      #To check if Ipsum service is enabled on boot  
+systemctl status Ips          #To check if Absolute service is running  
+systemctl start Ips           #To start Absolute service  
+systemctl stop Ips            #To stop Absolute service  
+systemctl is-enabled Ips      #To check if Absolute service is enabled on boot  
 ```  
 ***
 
