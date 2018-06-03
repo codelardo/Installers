@@ -1,13 +1,13 @@
 ![](https://www.absolutecoin.net/images/ABS-Logo-160x160.png)
 
 # Absolute v12.2.2 Masternode Setup Guide [ Ubuntu 16.04 ]
-
+```
 THIS GUIDE WILL CREATE A NEW USER -
+```
+# MUST BE INSTALLED UNDER ROOT USER
 
-##MUST BE INSTALLED UNDER ROOT USER##
 
-
-Shell script to install a [Absolute Masternode](https://ipsum.network/) on a Linux server running Ubuntu 16.04. Use it on your own risk.
+Shell script to install a [Absolute Masternode](https://www.absolutecoin.net/) on a Linux server running Ubuntu 16.04. Use it on your own risk.
 ***
 
 ## Private Key
@@ -15,7 +15,8 @@ Shell script to install a [Absolute Masternode](https://ipsum.network/) on a Lin
 **This script can generate a private key for you, or you can generate your own private key on the Desktop software.**
 
 Steps generate your own private key. 
-1.  Download and install Absolute v12.2.2 for Windows -   Download Link  - https://github.com/absolute-community/absolute/releases
+1.  Download and install Absolute v12.2.2 for Windows -   
+Download Link  - https://github.com/absolute-community/absolute/releases
 2.  Open Absoulte Wallet
 3.  Go to **Tools -> Click "Debug Console"** 
 4.  Type the following command: **masternode genkey**  
