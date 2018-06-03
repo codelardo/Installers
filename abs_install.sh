@@ -5,6 +5,7 @@ CONFIG_FILE="absolute.conf"
 ABS_DAEMON="/usr/local/bin/absoluted"
 ABS_CLI="/usr/local/bin/absolute-cli"
 ABS_REPO="https://github.com/absolute-community/absolute/releases/download/12.2.2/absolute_12.2.2_linux.tar.gz"
+COIN_ZIP=$(echo $ABS_REPO | awk -F'/' '{print $NF}')
 SENTINEL_REPO="https://github.com/absolute-community/sentinel.git "
 DEFAULTABSPORT=18888
 DEFAULTABSUSER="absuser"
@@ -121,7 +122,7 @@ function compile_node() {
   echo -e "Download binaries. This may take some time. Press a key to continue."
   cd $TMP_FOLDER >/dev/null 2>&1
   wget -q $ABS_REPO >/dev/null 2>&1
-  tar xvzf $ABS_REPO --strip 1 >/dev/null 2>&1
+  tar xvzf $COIN_ZIP --strip 1 >/dev/null 2>&1
   compile_error AbsoluteCoin
   cp abs* /usr/local/bin
   chmod +x /usr/local/bin/abs*
