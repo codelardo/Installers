@@ -1,13 +1,13 @@
 #!/bin/bash
 
 TMP_FOLDER=$(mktemp -d)
-CONFIG_FILE="omegacoin.conf"
-OMEGA_DAEMON="/usr/local/bin/omegacoind"
-OMEGA_CLI="/usr/local/bin/omegacoin-cli"
-OMEGA_REPO="https://github.com/omegacoinnetwork/omegacoin/releases/download/0.12.5.1/omagecoincore-0.12.5.1-linux64.zip"
-SENTINEL_REPO="https://github.com/omegacoinnetwork/sentinel.git"
-DEFAULTOMEGAPORT=7777
-DEFAULTOMEGAUSER="omega"
+CONFIG_FILE="absolute.conf"
+ABS_DAEMON="/usr/local/bin/absoluted"
+ABS_CLI="/usr/local/bin/absolute-cli"
+ABS_REPO="https://github.com/absolute-community/absolute/releases/download/12.2.2/absolute_12.2.2_linux.tar.gz"
+SENTINEL_REPO="https://github.com/absolute-community/sentinel.git "
+DEFAULTABSPORT=18888
+DEFAULTABSUSER="absuser"
 NODEIP=$(curl -s4 icanhazip.com)
 
 
@@ -60,19 +60,19 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-if [ -n "$(pidof $OMEGA_DAEMON)" ] || [ -e "$OMEGA_DAEMOM" ] ; then
+if [ -n "$(pidof $ABS_DAEMON)" ] || [ -e "$ABS_DAEMOM" ] ; then
   echo -e "${GREEN}\c"
-  read -e -p "Omega is already installed. Do you want to add another MN? [Y/N]" NEW_OMEGA
+  read -e -p "Absolute is already installed. Do you want to add another MN? [Y/N]" NEW_ABS
   echo -e "{NC}"
   clear
 else
-  NEW_OMEGA="new"
+  NEW_ABS="new"
 fi
 }
 
 function prepare_system() {
 
-echo -e "Prepare the system to install Omega master node."
+echo -e "Prepare the system to install Absolute master node."
 apt-get update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive apt-get update > /dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -qq upgrade >/dev/null 2>&1
@@ -120,20 +120,20 @@ clear
 function compile_node() {
   echo -e "Download binaries. This may take some time. Press a key to continue."
   cd $TMP_FOLDER >/dev/null 2>&1
-  wget -q $OMEGA_REPO >/dev/null 2>&1
-  unzip $(echo $OMEGA_REPO | awk -F"/" '{print $NF}') >/dev/null 2>&1
-  compile_error OmegaCoin
-  cp omega* /usr/local/bin
-  chmod +x /usr/local/bin/omega*
+  wget -q $ABS_REPO >/dev/null 2>&1
+  unzip $(echo $ABS_REPO | awk -F"/" '{print $NF}') >/dev/null 2>&1
+  compile_error AbsoluteCoin
+  cp abs* /usr/local/bin
+  chmod +x /usr/local/bin/abs*
   cd - 
   rm -rf $TMP_FOLDER
   clear
 }
 
 function enable_firewall() {
-  echo -e "Installing and etting up firewall to allow ingress on port ${GREEN}$OMEGAPORT${NC}"
-  ufw allow $OMEGAPORT/tcp comment "OMEGA MN port" >/dev/null
-  ufw allow $[OMEGAPORT+1]/tcp comment "OMEGA RPC port" >/dev/null
+  echo -e "Installing and etting up firewall to allow ingress on port ${GREEN}$ABSPORT${NC}"
+  ufw allow $ABSPORT/tcp comment "ABS MN port" >/dev/null
+  ufw allow $[ABSPORT+1]/tcp comment "ABS RPC port" >/dev/null
   ufw allow ssh comment "SSH" >/dev/null 2>&1
   ufw limit ssh/tcp >/dev/null 2>&1
   ufw default allow outgoing >/dev/null 2>&1
@@ -141,20 +141,20 @@ function enable_firewall() {
 }
 
 function configure_systemd() {
-  cat << EOF > /etc/systemd/system/$OMEGAUSER.service
+  cat << EOF > /etc/systemd/system/$ABSUSER.service
 [Unit]
-Description=OMEGA service
+Description=ABS service
 After=network.target
 
 [Service]
-User=$OMEGAUSER
-Group=$OMEGAUSER
+User=$ABSUSER
+Group=$ABSUSER
 
 Type=forking
-PIDFile=$OMEGAFOLDER/$OMEGAUSER.pid
+PIDFile=$ABSFOLDER/$ABSUSER.pid
 
-ExecStart=$OMEGA_DAEMON -daemon -pid=$OMEGAFOLDER/$OMEGAUSER.pid -conf=$OMEGAFOLDER/$CONFIG_FILE -datadir=$OMEGAFOLDER
-ExecStop=-$OMEGA_CLI -conf=$OMEGAFOLDER/$CONFIG_FILE -datadir=$OMEGAFOLDER stop
+ExecStart=$ABS_DAEMON -daemon -pid=$ABSFOLDER/$ABSUSER.pid -conf=$ABSFOLDER/$CONFIG_FILE -datadir=$ABSFOLDER
+ExecStop=-$ABS_CLI -conf=$ABSFOLDER/$CONFIG_FILE -datadir=$ABSFOLDER stop
 
 Restart=always
 PrivateTmp=true
@@ -169,38 +169,38 @@ EOF
 
   systemctl daemon-reload
   sleep 3
-  systemctl start $OMEGAUSER.service
-  systemctl enable $OMEGAUSER.service
+  systemctl start $ABSUSER.service
+  systemctl enable $ABSUSER.service
 
-  if [[ -z "$(ps axo user:15,cmd:100 | egrep ^$OMEGAUSER | grep $OMEGA_DAEMON)" ]]; then
-    echo -e "${RED}OMEGA is not running${NC}, please investigate. You should start by running the following commands as root:"
-    echo -e "${GREEN}systemctl start $OMEGAUSER.service"
-    echo -e "systemctl status $OMEGAUSER.service"
+  if [[ -z "$(ps axo user:15,cmd:100 | egrep ^$ABSUSER | grep $ABS_DAEMON)" ]]; then
+    echo -e "${RED}ABS is not running${NC}, please investigate. You should start by running the following commands as root:"
+    echo -e "${GREEN}systemctl start $ABSUSER.service"
+    echo -e "systemctl status $ABSUSER.service"
     echo -e "less /var/log/syslog${NC}"
     exit 1
   fi
 }
 
 function ask_port() {
-read -p "Omega Port: " -i $DEFAULTOMEGAPORT -e OMEGAPORT
-: ${OMEGAPORT:=$DEFAULTOMEGAPORT}
+read -p "Absolute Port: " -i $DEFAULTABSPORT -e ABSPORT
+: ${ABSPORT:=$DEFAULTABSPORT}
 }
 
 function ask_user() {
-  read -p "Omega user: " -i $DEFAULTOMEGAUSER -e OMEGAUSER
-  : ${OMEGAUSER:=$DEFAULTOMEGAUSER}
+  read -p "Absolute user: " -i $DEFAULTABSUSER -e ABSUSER
+  : ${ABSUSER:=$DEFAULTABSUSER}
 
-  if [ -z "$(getent passwd $OMEGAUSER)" ]; then
+  if [ -z "$(getent passwd $ABSUSER)" ]; then
     USERPASS=$(pwgen -s 12 1)
-    useradd -m $OMEGAUSER
-    echo "$OMEGAUSER:$USERPASS" | chpasswd
+    useradd -m $ABSUSER
+    echo "$ABSUSER:$USERPASS" | chpasswd
 
-    OMEGAHOME=$(sudo -H -u $OMEGAUSER bash -c 'echo $HOME')
-    DEFAULTOMEGAFOLDER="$OMEGAHOME/.omegacoincore"
-    read -p "Configuration folder: " -i $DEFAULTOMEGAFOLDER -e OMEGAFOLDER
-    : ${OMEGAFOLDER:=$DEFAULTOMEGAFOLDER}
-    mkdir -p $OMEGAFOLDER
-    chown -R $OMEGAUSER: $OMEGAFOLDER >/dev/null
+    ABSHOME=$(sudo -H -u $ABSUSER bash -c 'echo $HOME')
+    DEFAULTABSFOLDER="$ABSHOME/.abscoincore"
+    read -p "Configuration folder: " -i $DEFAULTABSFOLDER -e ABSFOLDER
+    : ${ABSFOLDER:=$DEFAULTABSFOLDER}
+    mkdir -p $ABSFOLDER
+    chown -R $ABSUSER: $ABSFOLDER >/dev/null
   else
     clear
     echo -e "${RED}User exits. Please enter another username: ${NC}"
@@ -213,7 +213,7 @@ function check_port() {
   PORTS=($(netstat -tnlp | grep $NODEIP | awk '/LISTEN/ {print $4}' | awk -F":" '{print $NF}' | sort | uniq | tr '\r\n'  ' '))
   ask_port
 
-  while [[ ${PORTS[@]} =~ $OMEGAPORT ]] || [[ ${PORTS[@]} =~ $[OMEGAPORT-1] ]]; do
+  while [[ ${PORTS[@]} =~ $ABSPORT ]] || [[ ${PORTS[@]} =~ $[ABSPORT-1] ]]; do
     clear
     echo -e "${RED}Port in use, please choose another port:${NF}"
     ask_port
@@ -223,81 +223,81 @@ function check_port() {
 function create_config() {
   RPCUSER=$(pwgen -s 8 1)
   RPCPASSWORD=$(pwgen -s 15 1)
-  cat << EOF > $OMEGAFOLDER/$CONFIG_FILE
+  cat << EOF > $ABSFOLDER/$CONFIG_FILE
 rpcuser=$RPCUSER
 rpcpassword=$RPCPASSWORD
 rpcallowip=127.0.0.1
-rpcport=$[OMEGAPORT+1]
+rpcport=$[ABSPORT+1]
 listen=1
 server=1
 #bind=$NODEIP
 daemon=1
-port=$OMEGAPORT
+port=$ABSPORT
 EOF
 }
 
 function create_key() {
   echo -e "Enter your ${RED}Masternode Private Key${NC}. Leave it blank to generate a new ${RED}Masternode Private Key${NC} for you:"
-  read -e OMEGAKEY
-  if [[ -z "$OMEGAKEY" ]]; then
-    su $OMEGAUSER -c "$OMEGA_DAEMON -conf=$OMEGAFOLDER/$CONFIG_FILE -datadir=$OMEGAFOLDER"
+  read -e ABSKEY
+  if [[ -z "$ABSKEY" ]]; then
+    su $ABSUSER -c "$ABS_DAEMON -conf=$ABSFOLDER/$CONFIG_FILE -datadir=$ABSFOLDER"
     sleep 30
-    if [ -z "$(ps axo user:15,cmd:100 | egrep ^$OMEGAUSER | grep $OMEGA_DAEMON)" ]; then
-     echo -e "${RED}Omega server couldn't start. Check /var/log/syslog for errors.{$NC}"
+    if [ -z "$(ps axo user:15,cmd:100 | egrep ^$ABSUSER | grep $ABS_DAEMON)" ]; then
+     echo -e "${RED}Absolute server couldn't start. Check /var/log/syslog for errors.{$NC}"
      exit 1
     fi
-    OMEGAKEY=$(su $OMEGAUSER -c "$OMEGA_CLI -conf=$OMEGAFOLDER/$CONFIG_FILE -datadir=$OMEGAFOLDER masternode genkey")
+    ABSKEY=$(su $ABSUSER -c "$ABS_CLI -conf=$ABSFOLDER/$CONFIG_FILE -datadir=$ABSFOLDER masternode genkey")
     if [ "$?" -gt "0" ];
       then
        echo -e "${RED}Wallet not fully loaded, need to wait a bit more time. ${NC}"
        sleep 30
-       OMEGAKEY=$(su $OMEGAUSER -c "$OMEGA_CLI -conf=$OMEGAFOLDER/$CONFIG_FILE -datadir=$OMEGAFOLDER masternode genkey")
+       ABSKEY=$(su $ABSUSER -c "$ABS_CLI -conf=$ABSFOLDER/$CONFIG_FILE -datadir=$ABSFOLDER masternode genkey")
     fi
-    su $OMEGAUSER -c "$OMEGA_CLI -conf=$OMEGAFOLDER/$CONFIG_FILE -datadir=$OMEGAFOLDER stop"
+    su $ABSUSER -c "$ABS_CLI -conf=$ABSFOLDER/$CONFIG_FILE -datadir=$ABSFOLDER stop"
   fi
 }
 
 function update_config() {
-  sed -i 's/daemon=1/daemon=0/' $OMEGAFOLDER/$CONFIG_FILE
-  cat << EOF >> $OMEGAFOLDER/$CONFIG_FILE
+  sed -i 's/daemon=1/daemon=0/' $ABSFOLDER/$CONFIG_FILE
+  cat << EOF >> $ABSFOLDER/$CONFIG_FILE
 maxconnections=256
 externalip=$NODEIP
 masternode=1
-masternodeaddr=$NODEIP:$OMEGAPORT
-masternodeprivkey=$OMEGAKEY
+masternodeaddr=$NODEIP:$ABSPORT
+masternodeprivkey=$ABSKEY
 EOF
-  chown -R $OMEGAUSER: $OMEGAFOLDER >/dev/null
+  chown -R $ABSUSER: $ABSFOLDER >/dev/null
 }
 
 
 function install_sentinel() {
-  SENTINELPORT=$[10001+$OMEGAPORT]
+  SENTINELPORT=$[10001+$ABSPORT]
   echo -e "${GREEN}Install sentinel.${NC}"
   apt-get install virtualenv >/dev/null 2>&1
-  git clone $SENTINEL_REPO $OMEGAHOME/sentinel >/dev/null 2>&1
-  cd $OMEGAHOME/sentinel
+  git clone $SENTINEL_REPO $ABSHOME/sentinel >/dev/null 2>&1
+  cd $ABSHOME/sentinel
   virtualenv ./venv >/dev/null 2>&1  
   ./venv/bin/pip install -r requirements.txt >/dev/null 2>&1
-  cd $OMEGAHOME
-  sed -i "s/19998/$SENTINELPORT/g" $OMEGAHOME/sentinel/test/unit/test_dash_config.py
-  echo  "* * * * * cd $OMEGAHOME/sentinel && ./venv/bin/python bin/sentinel.py >> ~/sentinel.log 2>&1" > $OMEGAHOME/omega_cron
-  chown -R $OMEGAUSER: $OMEGAHOME/sentinel >/dev/null 2>&1
-  chown $OMEGAUSER: $OMEGAHOME/omega_cron
-  crontab -u $OMEGAUSER $OMEGAHOME/omega_cron
-  rm omega_cron >/dev/null 2>&1
+  cd $ABSHOME
+  sed -i "s/18878/$SENTINELPORT/g" $ABSHOME/sentinel/test/unit/test_dash_config.py
+  echo  "* * * * * cd $ABSHOME/sentinel && ./venv/bin/python bin/sentinel.py >> ~/sentinel.log 2>&1" > $ABSHOME/abs_cron
+  chown -R $ABSUSER: $ABSHOME/sentinel >/dev/null 2>&1
+  chown $ABSUSER: $ABSHOME/abs_cron
+  crontab -u $ABSUSER $ABSHOME/abs_cron
+  rm abs_cron >/dev/null 2>&1
 }
 
 function important_information() {
  echo
  echo -e "================================================================================================================================"
- echo -e "Omega Masternode is up and running as user ${GREEN}$OMEGAUSER${NC} and it is listening on port ${GREEN}$OMEGAPORT${NC}."
- echo -e "${GREEN}$OMEGAUSER${NC} password is ${RED}$USERPASS${NC}"
- echo -e "Configuration file is: ${RED}$OMEGAFOLDER/$CONFIG_FILE${NC}"
- echo -e "Start: ${RED}systemctl start $OMEGAUSER.service${NC}"
- echo -e "Stop: ${RED}systemctl stop $OMEGAUSER.service${NC}"
- echo -e "VPS_IP:PORT ${RED}$NODEIP:$OMEGAPORT${NC}"
- echo -e "MASTERNODE PRIVATEKEY is: ${RED}$OMEGAKEY${NC}"
- echo -e "Please check Omega is running with the following command: ${GREEN}systemctl status $OMEGAUSER.service${NC}"
+ echo -e "Absolute Masternode is up and running as user ${GREEN}$ABSUSER${NC} and it is listening on port ${GREEN}$ABSPORT${NC}."
+ echo -e "${GREEN}$ABSUSER${NC} password is ${RED}$USERPASS${NC}"
+ echo -e "Configuration file is: ${RED}$ABSFOLDER/$CONFIG_FILE${NC}"
+ echo -e "Start: ${RED}systemctl start $ABSUSER.service${NC}"
+ echo -e "Stop: ${RED}systemctl stop $ABSUSER.service${NC}"
+ echo -e "VPS_IP:PORT ${RED}$NODEIP:$ABSPORT${NC}"
+ echo -e "MASTERNODE PRIVATEKEY is: ${RED}$ABSKEY${NC}"
+ echo -e "Please check Absolute is running with the following command: ${GREEN}systemctl status $ABSUSER.service${NC}"
  echo -e "================================================================================================================================"
 }
 
@@ -319,15 +319,15 @@ function setup_node() {
 clear
 
 checks
-if [[ ("$NEW_OMEGA" == "y" || "$NEW_OMEGA" == "Y") ]]; then
+if [[ ("$NEW_ABS" == "y" || "$NEW_ABS" == "Y") ]]; then
   setup_node
   exit 0
-elif [[ "$NEW_OMEGA" == "new" ]]; then
+elif [[ "$NEW_ABS" == "new" ]]; then
   prepare_system
   compile_node
   setup_node
 else
-  echo -e "${GREEN}Omega already running.${NC}"
+  echo -e "${GREEN}Absolute already running.${NC}"
   exit 0
 fi
 
