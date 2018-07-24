@@ -25,7 +25,7 @@ Download Link  - https://github.com/absolute-community/absolute/releases
 
 ## VPS installation
 ```
-wget -q https://github.com/CryptoNeverSleeps/Absolute-Community/raw/master/abs_install.sh
+wget -q https://github.com/absolute-community/Installers/install.sh
 bash abs_install.sh
 ```
 Once the VPS installation is finished.
