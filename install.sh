@@ -4,7 +4,7 @@ TMP_FOLDER=$(mktemp -d)
 CONFIG_FILE="absolute.conf"
 ABS_DAEMON="/usr/local/bin/absoluted"
 ABS_CLI="/usr/local/bin/absolute-cli"
-ABS_REPO="https://github.com/absolute-community/absolute/releases/download/12.2.2/absolute_12.2.2_linux.tar.gz"
+ABS_REPO="https://github.com/absolute-community/absolute/releases/download/12.2.3/absolute_12.2.3_linux.tar.gz"
 COIN_ZIP=$(echo $ABS_REPO | awk -F'/' '{print $NF}')
 SENTINEL_REPO="https://github.com/absolute-community/sentinel.git "
 DEFAULTABSPORT=18888
@@ -73,7 +73,7 @@ fi
 
 function prepare_system() {
 
-echo -e "Prepare the system to install Absolute master node."
+echo -e "Preparing the system to install Absolute Masternode."
 apt-get update >/dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive apt-get update > /dev/null 2>&1
 DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y -qq upgrade >/dev/null 2>&1
@@ -119,7 +119,7 @@ clear
 }
 
 function compile_node() {
-  echo -e "Download binaries. This may take some time. Press a key to continue."
+  echo -e "Downloading binaries. This may take some time."
   cd $TMP_FOLDER >/dev/null 2>&1
   wget -q $ABS_REPO >/dev/null 2>&1
   tar xvzf $COIN_ZIP --strip 1 >/dev/null 2>&1
@@ -132,7 +132,7 @@ function compile_node() {
 }
 
 function enable_firewall() {
-  echo -e "Installing and etting up firewall to allow ingress on port ${GREEN}$ABSPORT${NC}"
+  echo -e "Installing and setting up firewall to allow ingress on port ${GREEN}$ABSPORT${NC}"
   ufw allow $ABSPORT/tcp comment "ABS MN port" >/dev/null
   ufw allow $[ABSPORT+1]/tcp comment "ABS RPC port" >/dev/null
   ufw allow ssh comment "SSH" >/dev/null 2>&1
@@ -170,6 +170,17 @@ EOF
 
   systemctl daemon-reload
   sleep 3
+  systemctl start $ABSUSER.service
+  systemctl enable $ABSUSER.service
+  systemctl stop $ABSUSER.service
+  wget -q https://github.com/CryptoNeverSleeps/Absolute-Community/releases/download/ABS-Blockchain/abs-blockchain.tar.gz
+  tar xvzf abs-blockchain.tar.gz >/dev/null 2>&1
+  cd bin
+  cp -a blocks $DEFAULTABSFOLDER/
+  cp -a chainstate $DEFAULTABSFOLDER/
+  cd ..
+  rm -rf bin
+  rm abs-blockchain.tar.gz
   systemctl start $ABSUSER.service
   systemctl enable $ABSUSER.service
 
@@ -234,6 +245,90 @@ server=1
 #bind=$NODEIP
 daemon=1
 port=$ABSPORT
+addnode=139.99.202.1:18888
+addnode=139.99.41.242:18888
+addnode=139.99.41.241:18888
+addnode=51.255.174.238:18888
+addnode=54.37.14.240:18888
+addnode=164.132.195.79:18888
+addnode=151.80.233.116:18888
+addnode=139.99.96.203:18888
+addnode=139.99.40.157:18888
+addnode=139.99.41.35:18888
+addnode=139.99.41.198:18888
+addnode=139.99.44.0:18888
+addnode=139.99.97.225:18888
+addnode=139.99.105.69:18888
+addnode=139.99.99.113:18888
+addnode=139.99.99.108:18888
+addnode=139.99.99.121:18888
+addnode=139.99.106.75:18888
+addnode=139.99.44.75:18888
+addnode=139.99.44.76:18888
+addnode=139.99.44.77:18888
+addnode=139.99.199.250:18888
+addnode=81.169.175.9:18888
+addnode=45.76.8.7:18888
+addnode=51.38.231.64:18888
+addnode=108.160.133.89:18888
+addnode=168.215.75.10:18888
+addnode=168.215.75.11:18888
+addnode=168.215.75.12:18888
+addnode=168.215.75.13:18888
+addnode=18.217.247.159:18888
+addnode=35.237.49.54:18888
+addnode=80.211.6.67:18888
+addnode=207.246.115.131:18888
+addnode=45.32.60.114:18888
+addnode=198.13.57.155:18888
+addnode=207.148.94.186:18888
+addnode=80.240.16.94:18888
+addnode=207.246.115.131:18888
+addnode=104.238.160.224:18888
+addnode=108.61.119.196:18888
+addnode=140.82.7.207:18888
+addnode=144.202.116.48:18888
+addnode=80.211.147.188:18888
+addnode=80.211.147.188:18888
+addnode=80.211.147.9:18888
+addnode=80.211.98.191:18888
+addnode=80.211.98.40:18888
+addnode=80.211.98.107:18888
+addnode=80.211.97.84:18888
+addnode=45.32.173.41:18888
+addnode=45.77.165.217:18888
+addnode=23.101.229.207:18888
+addnode=23.101.228.48:18888
+addnode=104.196.41.192:18888
+addnode=136.243.185.11:18888
+addnode=108.61.128.54:18888
+addnode=140.82.46.194:18888
+addnode=185.213.211.238:18888
+addnode=80.211.55.57:18888
+addnode=80.211.45.84:18888
+addnode=88.5.209.230:18888
+addnode=94.177.190.193:18888
+addnode=136.243.185.21:18888
+addnode=136.243.185.17:18888
+addnode=80.211.65.213:18888
+addnode=109.71.215.31:18888
+addnode=95.179.161.152:18888
+addnode=207.148.68.207:18888
+addnode=51.38.112.247:18888
+addnode=80.211.90.131:18888
+addnode=212.237.21.125:18888
+addnode=80.211.81.203:18888
+addnode=80.211.86.246:18888
+addnode=149.28.119.198:18888
+addnode=149.28.229.155:188888
+addnode=149.28.104.170:18888
+addnode=45.77.165.217:18888
+addnode=80.211.86.246:18888
+addnode=51.38.234.233:18888
+addnode=54.36.146.89:18888
+addnode=54.37.180.25:18888
+addnode=54.37.180.26:18888
+addnode=144.202.2.200:18888
 EOF
 }
 
@@ -273,18 +368,18 @@ EOF
 
 function install_sentinel() {
   SENTINELPORT=$[10001+$ABSPORT]
-  echo -e "${GREEN}Install sentinel.${NC}"
+  echo -e "${GREEN}Installing sentinel. Press ENTER to continue.${NC}"
   apt-get install virtualenv >/dev/null 2>&1
   git clone $SENTINEL_REPO $ABSHOME/sentinel >/dev/null 2>&1
   cd $ABSHOME/sentinel
   virtualenv ./venv >/dev/null 2>&1  
   ./venv/bin/pip install -r requirements.txt >/dev/null 2>&1
   cd $ABSHOME
-  sed -i "s/18878/$SENTINELPORT/g" $ABSHOME/sentinel/test/unit/test_dash_config.py
+  sed -i "s/28889/$SENTINELPORT/g" $ABSHOME/sentinel/test/unit/test_absolute_config.py
   echo  "* * * * * cd $ABSHOME/sentinel && ./venv/bin/python bin/sentinel.py >> ~/sentinel.log 2>&1" > $ABSHOME/abs_cron
   chown -R $ABSUSER: $ABSHOME/sentinel >/dev/null 2>&1
-  chown $ABSUSER: $ABSHOME/abs_cron
-  crontab -u $ABSUSER $ABSHOME/abs_cron
+  chown $ABSUSER: $ABSHOME/abs_cron >/dev/null 2>&1
+  crontab -u $ABSUSER $ABSHOME/abs_cron >/dev/null 2>&1
   rm abs_cron >/dev/null 2>&1
 }
 
@@ -331,4 +426,3 @@ else
   echo -e "${GREEN}Absolute already running.${NC}"
   exit 0
 fi
-
